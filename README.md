@@ -18,7 +18,6 @@ The plugin is the primary deliverable. The demo exists only to prove the plugin 
 demoPosition/
 ├── egnss-capacitor/   # the plugin (publishable package)
 ├── demo-app/          # the consumer app (uses egnss-capacitor via file:)
-├── PIANO.md           # full design doc (IT)
 └── README.md          # this file
 ```
 
@@ -27,69 +26,8 @@ demoPosition/
 - **One field** tells the app how much it can trust the fix: `integrityLevel: 'HIGH' | 'STANDARD' | 'LOW' | 'UNTRUSTED'`.
 - The demo-app does **not** need to branch on the platform — the plugin handles all platform differences internally.
 
----
 
-## Git monorepo (one remote, two packages)
 
-Use **one Git repository at the workspace root** — the folder that contains `egnss-capacitor/`, `demo-app/`, `README.md`, and `.gitignore`. Do **not** run `git init` separately inside each subfolder (if you ever did, delete the nested `.git` directory before pushing).
-
-### What was wrong with the snippet you had
-
-| Command | Problem |
-| ------- | ------- |
-| `git add README.md` | Only stages one file. The plugin and demo never reach GitHub. |
-| (implicit) | `git init` must run in the **root** of the monorepo, not inside `egnss-capacitor/` alone. |
-
-### First-time push (example: `github.com/1vcian/egnss-capacitor`)
-
-From the directory that already contains both folders:
-
-```bash
-cd /path/to/your/workspace   # e.g. demoPosition — name of the folder can differ from the GitHub repo name
-
-# Optional: remove accidental nested repos
-find . -name .git -type d
-
-git init
-git add .
-git status    # confirm: no node_modules/, no dist/, no huge build trees
-
-git commit -m "Initial commit: egnss-capacitor + demo-app"
-git branch -M main
-git remote add origin https://github.com/1vcian/egnss-capacitor.git
-git push -u origin main
-```
-
-A root [`.gitignore`](./.gitignore) ignores `**/node_modules/`, `**/dist/`, Gradle / Xcode artefacts, etc. Adjust if you decide to **commit** generated `demo-app/android/` or `demo-app/ios/` trees — today [`demo-app/.gitignore`](./demo-app/.gitignore) excludes those folders by design for a lighter clone; remove those lines only if you want native projects in Git.
-
----
-
-## GitHub Pages (live web demo)
-
-The workflow [`.github/workflows/github-pages.yml`](./.github/workflows/github-pages.yml) builds **`demo-app`** (after building **`egnss-capacitor`**) and deploys `demo-app/dist` to **GitHub Pages**.
-
-1. Push the workflow file to `main` (or `master`).
-2. On GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-3. After the workflow succeeds, the site is at  
-   `https://<your-username>.github.io/<repository-name>/`  
-   e.g. `https://1vcian.github.io/egnss-capacitor/`.
-
-`VITE_BASE_PATH` is set in CI to `/<repository-name>/` so Vite emits correct asset URLs for project Pages. If you rename the repository, the next deploy picks up the new name automatically.
-
-### Build the same site locally
-
-The slug **must match** the GitHub repository name (the segment after `github.io/`):
-
-```bash
-cd egnss-capacitor && npm ci && npm run build && cd ../demo-app && npm ci
-VITE_BASE_PATH=/egnss-capacitor/ npm run build
-VITE_BASE_PATH=/egnss-capacitor/ npm run preview
-# Open the URL Vite prints, under the /egnss-capacitor/ path (e.g. http://localhost:4173/egnss-capacitor/)
-```
-
-For day-to-day dev and Capacitor, omit `VITE_BASE_PATH` (defaults to `./`).
-
----
 
 ## Supported targets
 
@@ -149,32 +87,6 @@ See [`egnss-capacitor/README.md`](./egnss-capacitor/README.md) for the full API 
 
 ---
 
-## Development roadmap & status
-
-The roadmap is split between **plugin tracks (P)** and **demo-app tracks (A)**. All milestones below are landed in the current tree and produce a passing build; the only manual follow-up left is **T1** — on-device verification against real hardware.
-
-| Track | Milestone                  | Outcome                                                                        | Status   |
-| ----- | -------------------------- | ------------------------------------------------------------------------------ | :------: |
-| **W0**| Workspace setup            | Both packages scaffolded, dependencies installed, empty build passes            | ✅ done  |
-| **P1**| Public contract            | `definitions.ts` complete; plugin registers on Android / iOS / Web              | ✅ done  |
-| **P2**| Web baseline               | Browser `navigator.geolocation` wired through the plugin                        | ✅ done  |
-| **A1**| Minimal demo               | Esri map + GPS button + live position marker with accuracy circle               | ✅ done  |
-| **P3**| Web Bluetooth              | `scanAntennas`, `connectAntenna`, NMEA streaming in Chrome                      | ✅ done  |
-| **A2**| Antenna UI                 | Antenna FAB + chooser; status badge shows `source: EXTERNAL_BT`                 | ✅ done  |
-| **P4**| Android baseline           | Kotlin plugin with `LocationManager`, `GnssStatus`, NMEA listener, mock detect. | ✅ done  |
-| **P5**| Android + EGNSS4ALL        | AAR drop-in `android/libs/` + reflection bridge, auto-enables OSNMA             | ✅ done  |
-| **P6**| Android + BT antenna       | `BluetoothAdapter` — SPP (RFCOMM) + BLE UART, NMEA to shared parser             | ✅ done  |
-| **P7**| iOS baseline               | Swift plugin with `CLLocationManager`, integrity + mock detection               | ✅ done  |
-| **P8**| ConvexHull + Integrity     | Swift / Kotlin / TS ports of the shared utilities                               | ✅ done  |
-| **P9**| iOS + BT antenna           | `CoreBluetooth` BLE + Swift NMEA parser                                         | ✅ done  |
-| **A3**| Camera + markers           | `@capacitor/camera` + Filesystem + Preferences, markers + delete popup          | ✅ done  |
-| **P10**| API polish                | Typed errors, docs, CHANGELOG, Esri attribution                                 | ✅ done  |
-| **T1**| On-device testing          | Chrome macOS + BT antenna / Android APK / iOS IPA                               | ⏳ next  |
-
-**Web-only slice** (W0, P1–P3, A1–A3): fully functional in Chrome / Edge / Opera / Brave on macOS today.
-**Native slices**: source-complete; require the consumer to run `npx cap add android/ios` inside `demo-app/` and a real device to verify.
-
----
 
 ## Requirements
 
@@ -227,9 +139,8 @@ Full step-by-step instructions will be added to [`demo-app/README.md`](./demo-ap
 
 ---
 
-## Licensing and third-party code
+## Third-party code
 
-- The plugin is released under the **MIT License** (see `egnss-capacitor/LICENSE`).
 - The plugin integrates source code derived from:
   - [`EGNSS4ALL/EGNSS4ALLAndroid`](https://github.com/EGNSS4ALL/EGNSS4ALLAndroid) (modules `gnss_scan`, `gnss_compare_core`, `convex_hull`) — the upstream repo does not yet declare a license file; its actual license must be confirmed with the maintainers before any public redistribution. This repository is a **demo** and is not redistributed publicly until that confirmation is obtained.
   - [`EGNSS4ALL/EGNSS4ALL-iOS`](https://github.com/EGNSS4ALL/EGNSS4ALL-iOS) (modules `ConvexHull`, `Satellite`, location-manager wrapper) — same caveat as above.
