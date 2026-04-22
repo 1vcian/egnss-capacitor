@@ -10,8 +10,6 @@ This workspace contains **two independent packages**:
 
 The plugin is the primary deliverable. The demo exists only to prove the plugin works and to drive its API design from a real use case.
 
-Full technical design document: [`PIANO.md`](./PIANO.md) (Italian, detailed).
-
 ---
 
 ## TL;DR
