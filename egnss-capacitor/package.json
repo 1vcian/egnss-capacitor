@@ -1,0 +1,60 @@
+{
+  "name": "egnss-capacitor",
+  "version": "0.1.0",
+  "description": "Universal Capacitor plugin for GNSS with EGNSS4ALL (internal chip) and external Bluetooth antenna support. Android, iOS, Web.",
+  "main": "dist/plugin.cjs.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "unpkg": "dist/plugin.js",
+  "files": [
+    "android/src/main/",
+    "android/build.gradle",
+    "dist/",
+    "ios/Plugin/",
+    "EgnssCapacitor.podspec"
+  ],
+  "author": "demoPosition",
+  "license": "MIT",
+  "keywords": [
+    "capacitor",
+    "plugin",
+    "native",
+    "gnss",
+    "gps",
+    "galileo",
+    "egnss4all",
+    "osnma",
+    "egnos",
+    "bluetooth",
+    "openlayers"
+  ],
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "npm run clean && tsc && rollup -c rollup.config.mjs",
+    "watch": "tsc --watch",
+    "lint": "tsc --noEmit",
+    "verify": "npm run verify:web",
+    "verify:web": "npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^8.3.1",
+    "@capacitor/core": "^8.3.1",
+    "@capacitor/ios": "^8.3.1",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.60.2",
+    "tslib": "^2.8.1",
+    "typescript": "~5.9.3"
+  },
+  "peerDependencies": {
+    "@capacitor/core": "^8.0.0"
+  },
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    },
+    "android": {
+      "src": "android"
+    }
+  }
+}

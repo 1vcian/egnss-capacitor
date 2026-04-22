@@ -1,0 +1,39 @@
+# Monorepo root — keep one Git repo here; ignore build artefacts everywhere.
+
+# Dependencies
+**/node_modules/
+
+# JS / Vite
+**/dist/
+**/.vite/
+*.log
+npm-debug.log*
+
+# Android / Gradle (native shells + build outputs)
+**/.gradle/
+**/local.properties
+**/*.iml
+**/.cxx/
+**/captures/
+
+# Typical Android build dirs (when android/ is tracked)
+**/android/**/build/
+**/android/.idea/
+
+# iOS
+**/Pods/
+**/Podfile.lock
+**/DerivedData/
+**/*.xcuserstate
+**/xcuserdata/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
+
+# Optional: local env
+.env
+.env.local

@@ -1,0 +1,68 @@
+# Publishes the web build of demo-app to GitHub Pages.
+# Enable: Repository → Settings → Pages → Build and deployment → Source: GitHub Actions.
+#
+# Live URL (project site): https://<owner>.github.io/<repo>/
+# Vite base path is set from the repository name so assets load correctly.
+
+name: GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: |
+            egnss-capacitor/package-lock.json
+            demo-app/package-lock.json
+
+      - name: Install & build plugin
+        working-directory: egnss-capacitor
+        run: npm ci && npm run build
+
+      - name: Install demo-app
+        working-directory: demo-app
+        run: npm ci
+
+      - name: Build demo for Pages
+        working-directory: demo-app
+        env:
+          # https://<owner>.github.io/<repo>/  → base must be /<repo>/
+          VITE_BASE_PATH: /${{ github.event.repository.name }}/
+        run: npm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: demo-app/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

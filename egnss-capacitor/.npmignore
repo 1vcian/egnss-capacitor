@@ -1,0 +1,12 @@
+node_modules/
+android/.gradle/
+android/build/
+android/local.properties
+ios/Pods/
+ios/Podfile.lock
+ios/build/
+src/
+tsconfig.json
+rollup.config.mjs
+.gitignore
+.DS_Store

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0b1220" />
+    <title>demoPosition</title>
+    <link rel="stylesheet" href="./src/styles/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Full-screen block shown on unsupported browsers (Safari, Firefox, iOS browsers).
+           Hidden by default; src/ui/browser-gate.js reveals it when needed. -->
+      <div id="browser-gate" class="gate" hidden>
+        <div class="gate__card">
+          <h1>Unsupported browser</h1>
+          <p>
+            demoPosition needs <strong>Web Bluetooth</strong> to pair with an
+            external GNSS antenna, which is available only on
+            <strong>Chromium-based browsers</strong>.
+          </p>
+          <p>
+            Please open this page in one of:
+            <strong>Chrome, Edge, Opera, Brave, Vivaldi</strong> on desktop or
+            Android. On iPhone and iPad, install the native Capacitor build instead.
+          </p>
+          <p class="gate__detail" id="gate-detail"></p>
+        </div>
+      </div>
+
+      <!-- OpenLayers mount point -->
+      <div id="map" class="map" aria-label="Map"></div>
+
+      <!-- Top status badge: platform, source, integrity, state -->
+      <div id="status" class="status" role="status" aria-live="polite">
+        <span class="status__badge" id="status-platform">platform: ?</span>
+        <span class="status__badge" id="status-state" data-state="idle">GNSS: idle</span>
+        <span class="status__badge" id="status-source">source: ?</span>
+        <span class="status__badge" id="status-integrity">integrity: ?</span>
+        <span class="status__badge" id="status-accuracy">±? m</span>
+      </div>
+
+      <!-- Slide-up panel with the full GnssFix payload; toggled by the chevron
+           above the FABs or by the G button after the first fix arrives. -->
+      <button
+        id="fix-panel-toggle"
+        class="fix-panel-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="fix-panel"
+        aria-label="Show GNSS details"
+        hidden
+      >
+        <span class="fix-panel-toggle__chevron" aria-hidden="true">▴</span>
+        <span class="fix-panel-toggle__label">Details</span>
+      </button>
+      <section
+        id="fix-panel"
+        class="fix-panel"
+        aria-label="GNSS fix details"
+        hidden
+      >
+        <header class="fix-panel__header">
+          <h2 id="fix-panel-title">Live GNSS fix</h2>
+          <button
+            id="fix-panel-close"
+            class="fix-panel__close"
+            type="button"
+            aria-label="Close details"
+          >
+            ×
+          </button>
+        </header>
+        <div id="fix-panel-body" class="fix-panel__body">
+          <p class="fix-panel__empty">
+            Press the <strong>G</strong> button to start the GNSS stream.
+          </p>
+        </div>
+      </section>
+
+      <!-- Floating action buttons -->
+      <div class="fabs">
+        <button
+          id="fab-antenna"
+          class="fab"
+          type="button"
+          aria-label="Pair Bluetooth antenna"
+          title="Pair Bluetooth antenna"
+        >
+          <span aria-hidden="true">A</span>
+        </button>
+        <button
+          id="fab-gps"
+          class="fab fab--primary"
+          type="button"
+          aria-label="Recenter on my position"
+          title="Recenter on my position"
+        >
+          <span aria-hidden="true">G</span>
+        </button>
+        <button
+          id="fab-camera"
+          class="fab"
+          type="button"
+          aria-label="Take geotagged photo"
+          title="Take geotagged photo"
+        >
+          <span aria-hidden="true">C</span>
+        </button>
+      </div>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
